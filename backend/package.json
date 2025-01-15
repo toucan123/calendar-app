@@ -1,0 +1,33 @@
+{
+  "name": "home",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc; node dist/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/swagger": "^9.2.0",
+    "@fastify/swagger-ui": "^5.1.0",
+    "@fastify/type-provider-typebox": "^5.0.0",
+    "@sinclair/typebox": "^0.33.17",
+    "@types/node": "^22.5.0",
+    "dotenv": "^16.4.7",
+    "fastify": "5.0.0",
+    "firebase-admin": "^13.0.2",
+    "pg-promise": "^11.10.1",
+    "redis": "^4.7.0",
+    "tsconfig-paths": "^4.2.0",
+    "tslib": "^2.6.3",
+    "typescript": "^5.5.4",
+    "typescript-transform-paths": "^3.5.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.12.2",
+    "@typescript-eslint/parser": "^8.12.2",
+    "eslint": "^9.13.0"
+  }
+}
