@@ -1,32 +1,65 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { auth } from './auth';
-import { User } from 'firebase/auth';
+import React, { useEffect, useState, createContext, useContext } from 'react';
+import { oauth2_v2 } from 'googleapis';
+import { api } from '../api/api';
+import * as authUtils from './authUtils';
 
-export const RequireAuth = ({ children }: { children: JSX.Element }) => {
-  const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
+interface AuthContextType {
+  user: oauth2_v2.Schema$Userinfo | undefined;  // FIXME: make own type?
+  isAuthenticated: boolean;
+  login: () => void;
+  logout: () => void;
+}
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      setCurrentUser(user);
-      setIsLoadingUser(false);
-    });
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [user, setUser] = useState<oauth2_v2.Schema$Userinfo | undefined>(undefined);
   
-    return () => unsubscribe();
+  useEffect(() => {
+    const validateToken = async () => {
+      try {
+        const { valid, user } = await api.validateAccessToken();
+        console.log(user);
+        if (valid) {
+          setIsAuthenticated(true);
+          setUser(user);
+        }
+      } catch(error) {
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoadingAuth(false);
+      }
+    }
+    validateToken();
   }, []);
 
+  const login = async () => {
+    authUtils.googleConsent();
+  };
 
-  useEffect(() => {
-    if (!isLoadingUser && !currentUser) {
-      navigate('/login');
-    }
-  }, [currentUser, isLoadingUser, navigate]);
+  const logout = async () => {
+    await api.logout();
+    setUser(undefined);
+    setIsAuthenticated(false);
+  };
 
-  if (isLoadingUser) {
+  if (isLoadingAuth) {
     return <div>Loading...</div>;
   }
-  
-  return children;
+
+  return (
+    <AuthContext.Provider value={{ login, logout, user, isAuthenticated }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }

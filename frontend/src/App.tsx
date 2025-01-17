@@ -1,24 +1,35 @@
 import './App.css'
 import Login from './components/Login';
 import Home from './components/Home';
-import { RequireAuth } from './authentication/RequireAuth';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { AuthProvider, useAuth } from './authentication/RequireAuth';
+import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom';
+import React from 'react';
+
+const ProtectedRoute: React.FC<{ children: React.ReactNode}> = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) {
+    return <Navigate to='/login'/>
+  }
+  return children
+}
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <RequireAuth><Home /></RequireAuth>,
+    element: <ProtectedRoute><Home /></ProtectedRoute>,
   },
   {
     path: '/login',
-    element: <Login/>
+    element: <Login/>,
   },
 ]);
 
 
 const App = () => {
   return (
-    <RouterProvider router={router}/>
+    <AuthProvider>
+      <RouterProvider router={router}/>
+    </AuthProvider>
   );
 }
 

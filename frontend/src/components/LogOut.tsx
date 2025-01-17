@@ -1,18 +1,9 @@
-import { useNavigate } from 'react-router-dom';
-import { signOut } from '../authentication/auth';
+import { useAuth } from '../authentication/RequireAuth';
 
 const LogOutButton = () => {
-  const navigate = useNavigate();
-  const handleLogOut = async () => {
-    try {
-      await signOut();
-      navigate('/login');
-    } catch (error) {
-      console.log('ooops', error);
-    }
-  };
+  const { logout } = useAuth();
 
-  return <button onClick={handleLogOut}>Sign out</button>;
+  return <button onClick={logout}>Sign out</button>;
 };
 
 export default LogOutButton;

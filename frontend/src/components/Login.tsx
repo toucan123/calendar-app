@@ -1,19 +1,9 @@
-import { googleSignIn } from '../authentication/auth';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../authentication/RequireAuth';
 
 const Login = () => {
-  const navigate = useNavigate();
+  const { login } = useAuth();
   
-  const handleLoginSuccess = async () => {
-    try {
-      await googleSignIn();
-      navigate('/');
-    } catch (error) {
-      console.log('ooops', error);
-    }
-  };
-
-  return <button onClick={handleLoginSuccess}>Sign in with Google</button>;
+  return <button onClick={login}>Sign in with Google</button>;
 };
 
 export default Login;

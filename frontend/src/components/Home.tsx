@@ -1,8 +1,8 @@
+import { useAuth } from '../authentication/RequireAuth';
 import LogOut from './LogOut';
-import { getCurrentUser } from '../authentication/auth';
 
 const Home = () => {
-  const user = getCurrentUser();
+  const { user } = useAuth();
   return (
     <div>hello {user?.email} <LogOut/></div>
   )
